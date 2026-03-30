@@ -1,0 +1,12 @@
+{
+  "name": "owaspa08-api",
+  "version": "1.0.0",
+  "description": "API simples para demonstrar OWASP A08:2025 (Software or Data Integrity Failures)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
