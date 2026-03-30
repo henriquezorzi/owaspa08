@@ -1,5 +1,5 @@
 // API simples em Node.js com Express para demonstrar OWASP A08:2025
-// Tópico: Software or Data Integrity Failures (Falhas de integridade de software ou dados)
+// Software or Data Integrity Failures (Falhas de integridade de software ou dados)
 
 const express = require('express');
 const app = express();
@@ -7,10 +7,7 @@ const PORT = 3000;
 
 app.use(express.json());
 
-// Armazenamento em memória APENAS para fins didáticos.
-// Assim podemos consultar depois, via GET, o que foi "comprado"
-// em cada versão (vulnerável e segura) usando o Postman.
-// OBS: Em produção, usar banco de dados / outro mecanismo persistente.
+// Armazenamento em memória APENAS para demonstração didática.
 const comprasVulneraveis = [];
 const comprasSeguras = [];
 
@@ -28,15 +25,8 @@ app.post('/comprar', (req, res) => {
 
   // VULNERABILIDADE: o servidor simplesmente aceita o valor de `preco`
   // enviado pelo cliente, sem conferir se é o preço real do produto.
-  // Um atacante pode usar ferramentas como Postman, curl ou modificar
+  // Um atacante pode usar ferramentas como Postman ou curl e modificar
   // o JavaScript no navegador para enviar um preço muito menor.
-
-  // Exemplo de "ataque" (simulação) usando curl:
-  // curl -X POST http://localhost:3000/comprar \
-  //   -H "Content-Type: application/json" \
-  //   -d "{\"produto\":\"notebook-gamer\",\"preco\":10}"
-  // O servidor aceitaria R$ 10,00 por um notebook gamer, pois
-  // confia no dado vindo do cliente.
 
   // Guardamos o registro da compra vulnerável em memória
   comprasVulneraveis.push({
@@ -53,8 +43,6 @@ app.post('/comprar', (req, res) => {
 });
 
 // Rota GET para consultar TODAS as compras feitas na versão vulnerável.
-// Útil para demonstrar no Postman como vários ataques de manipulação
-// de preço foram aceitos pelo servidor inseguro.
 app.get('/compras-vulneraveis', (req, res) => {
   return res.json({
     tipo: 'VERSAO_VULNERAVEL',
@@ -75,7 +63,7 @@ app.get('/compras-vulneraveis', (req, res) => {
 // Isso garante a integridade dos dados de preço, pois o cliente
 // não consegue alterar o valor real do produto.
 
-// Tabela de preços oficial no backend (fonte de verdade)
+// Tabela de preços oficial no backend
 const PRECO_OFICIAL = {
   'notebook-gamer': 5000.0,
   'mouse-gamer': 150.0,
@@ -104,7 +92,7 @@ app.post('/comprar-seguro', (req, res) => {
 
   // Aqui a integridade do preço é garantida, pois o valor vem
   // SOMENTE do backend (PRECO_OFICIAL), não do cliente.
-  // Guardamos o registro da compra segura em memória para consulta posterior.
+  // Aqui é guardado o registro da compra segura em memória para consulta posterior.
   comprasSeguras.push({
     produto,
     precoCobrado: precoOficial,
