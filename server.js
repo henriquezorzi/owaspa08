@@ -29,7 +29,7 @@ const PRECO_OFICIAL = {
 // pois o valor crítico (preço) é controlado pelo cliente.
 
 app.post('/comprar', (req, res) => {
-  const { produto, preco } = req.body;
+  const { produto, preco } = req.body;  // AQUI ESTÁ A VULNERABILIDADE: o servidor aceita o preço enviado pelo cliente sem validação.
 
   if (typeof produto !== 'string' || produto.trim().length === 0) {
     return res.status(400).json({
@@ -140,8 +140,8 @@ app.get('/compras-seguras', (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
-  console.log('Endpoint vulnerável:  POST http://localhost:3000/comprar');
-  console.log('Endpoint seguro:      POST http://localhost:3000/comprar-seguro');
+  console.log('Endpoint vulnerável:           POST http://localhost:3000/comprar');
+  console.log('Endpoint seguro:               POST http://localhost:3000/comprar-seguro');
   console.log('Consultar compras vulneráveis: GET  http://localhost:3000/compras-vulneraveis');
   console.log('Consultar compras seguras:     GET  http://localhost:3000/compras-seguras');
 });
