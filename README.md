@@ -23,6 +23,10 @@ Endereços:
 }
 ```
 
+Observacoes:
+- O servidor valida tipos (produto string nao vazia, preco numero > 0).
+- Payload JSON limitado a 10kb para evitar abusos em demo.
+
 ## Passo a passo rápido no Postman
 
 1. **Ataque na versão vulnerável**

@@ -3,13 +3,21 @@
 
 const express = require('express');
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
-app.use(express.json());
+// Limitar o tamanho da carga útil para reduzir o abuso em demonstrações
+app.use(express.json({ limit: '10kb' }));
 
-// Armazenamento em memória APENAS para demonstração didática.
+// Armazenamento em memória APENAS para demonstração da apresentação.
 const comprasVulneraveis = [];
 const comprasSeguras = [];
+
+// Tabela de preços oficial no backend
+const PRECO_OFICIAL = {
+  'notebook-gamer': 5000.0,
+  'mouse-gamer': 150.0,
+  'teclado-mecanico': 350.0
+};
 
 // =============================
 // VERSÃO VULNERÁVEL (/comprar)
@@ -23,10 +31,30 @@ const comprasSeguras = [];
 app.post('/comprar', (req, res) => {
   const { produto, preco } = req.body;
 
+  if (typeof produto !== 'string' || produto.trim().length === 0) {
+    return res.status(400).json({
+      erro: 'Campo "produto" deve ser uma string nao vazia.'
+    });
+  }
+
+  if (typeof preco !== 'number' || Number.isNaN(preco) || preco <= 0) {
+    return res.status(400).json({
+      erro: 'Campo "preco" deve ser um numero maior que zero.'
+    });
+  }
+
   // VULNERABILIDADE: o servidor simplesmente aceita o valor de `preco`
   // enviado pelo cliente, sem conferir se é o preço real do produto.
   // Um atacante pode usar ferramentas como Postman ou curl e modificar
   // o JavaScript no navegador para enviar um preço muito menor.
+
+  const precoOficial = PRECO_OFICIAL[produto];
+  if (precoOficial !== undefined && preco < precoOficial * 0.5) {
+    console.warn(
+      '[ALERTA] Preco muito abaixo do oficial:',
+      { produto, precoRecebido: preco, precoOficial }
+    );
+  }
 
   // Guardamos o registro da compra vulnerável em memória
   comprasVulneraveis.push({
@@ -63,20 +91,13 @@ app.get('/compras-vulneraveis', (req, res) => {
 // Isso garante a integridade dos dados de preço, pois o cliente
 // não consegue alterar o valor real do produto.
 
-// Tabela de preços oficial no backend
-const PRECO_OFICIAL = {
-  'notebook-gamer': 5000.0,
-  'mouse-gamer': 150.0,
-  'teclado-mecanico': 350.0
-};
-
 app.post('/comprar-seguro', (req, res) => {
   const { produto } = req.body;
   // Qualquer `preco` enviado pelo cliente será ignorado
 
-  if (!produto) {
+  if (typeof produto !== 'string' || produto.trim().length === 0) {
     return res.status(400).json({
-      erro: 'Campo "produto" é obrigatório.'
+      erro: 'Campo "produto" deve ser uma string nao vazia.'
     });
   }
 
