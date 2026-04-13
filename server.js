@@ -2,11 +2,24 @@
 // Software or Data Integrity Failures (Falhas de integridade de software ou dados)
 
 const express = require('express');
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./swagger');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Limitar o tamanho da carga útil para reduzir o abuso em demonstrações
 app.use(express.json({ limit: '10kb' }));
+
+// =============================
+// CONFIGURAÇÃO DO SWAGGER/OPENAPI
+// =============================
+app.use('/api-docs', swaggerUi.serve);
+app.get('/api-docs', swaggerUi.setup(swaggerSpec, {
+  swaggerOptions: {
+    docExpansion: 'list' // Deixa os endpoints expandidos por padrão para melhor visualização
+  }
+}));
 
 // Armazenamento em memória APENAS para demonstração da apresentação.
 const comprasVulneraveis = [];
@@ -140,6 +153,10 @@ app.get('/compras-seguras', (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
+  console.log('');
+  console.log('📚 SWAGGER UI (Documentação Interativa):');
+  console.log('   http://localhost:' + PORT + '/api-docs');
+  console.log('');
   console.log('Endpoint vulnerável:           POST http://localhost:3000/comprar');
   console.log('Endpoint seguro:               POST http://localhost:3000/comprar-seguro');
   console.log('Consultar compras vulneráveis: GET  http://localhost:3000/compras-vulneraveis');
