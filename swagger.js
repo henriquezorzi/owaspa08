@@ -44,7 +44,7 @@ const swaggerSpec = swaggerJsdoc(options);
  * SCHEMAS (REUTILIZÁVEIS)
  * ================================
  */
-/*
+
 swaggerSpec.components = {
   schemas: {
     ProdutoInput: {
@@ -89,7 +89,7 @@ swaggerSpec.components = {
     }
   }
 };
-*/
+
 
 /**
  * ================================
